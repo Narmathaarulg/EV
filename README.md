@@ -1,173 +1,248 @@
+# ⚡ Global EV Charging Behaviour — Prediction & Analysis
 
+> A Machine Learning web application that predicts the success of Electric Vehicle charging sessions using real-world behavioural features like battery capacity, session duration, energy delivered, and ambient temperature.
 
-<h3 align="center">EV Charging Prediction Model</h3>
+---
 
-  <p align="center">
-    A Machine Learning application to predict Electric Vehicle charging session success and monitor station parameters!
-    <br />
-    <a href="https://github.com/your_username/repo_name"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/your_username/repo_name">View Demo</a>
-    ·
-    <a href="https://github.com/your_username/repo_name/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/your_username/repo_name/issues">Request Feature</a>
-  </p>
-</div>
+## 📌 Table of Contents
 
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#project-structure">Project Structure</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-  </ol>
-</details>
+- [Overview](#overview)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Dataset](#dataset)
+- [Model Details](#model-details)
+- [Prerequisites & Installation](#prerequisites--installation)
+- [How to Run](#how-to-run)
+- [API Reference](#api-reference)
+- [Screenshots](#screenshots)
+- [Future Improvements](#future-improvements)
+- [Contributing](#contributing)
+- [License](#license)
 
-<!-- ABOUT THE PROJECT -->
-## About The Project
+---
 
-<!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
+## 🌍 Overview
 
-The **EV Charging Prediction Model** aims to evaluate real-time or historical electric vehicle charging sessions to predict if the session will be successfully completed or fail. Built with an optimized **Gradient Boosting Classifier**, the system accounts for several variables like battery capacity, temperature, utilization rates, and more.
+The **Global EV Charging Behaviour** project studies and predicts patterns in Electric Vehicle (EV) charging sessions across diverse geographies and use cases. With EV adoption accelerating worldwide, understanding *when*, *how*, and *how successfully* vehicles charge is critical for infrastructure planning and grid management.
 
-Key Highlights:
-* 🚀 **End-to-end Pipeline**: From data ingestion, robust feature engineering to a live Flask backend serving real-time predictions.
-* 🧠 **Smart Feature Engineering**: Automatically extracts datetime elements, groups temperatures into distinct categories, and computes dynamically changing variables like EV charging speed.
-* 🌐 **Interactive GUI**: Fully functional frontend interface developed with HTML/CSS.
+This project provides:
+- A **trained ML pipeline** to predict whether a charging session will succeed or fail.
+- A **Flask-powered web application** with a clean user interface for real-time predictions.
+- An **exploratory data analysis (EDA)** notebook for insights into global charging behaviour trends.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+---
 
-### Built With
+## 🚀 Features
 
-* [![Python][Python.org]][Python-url]
-* [![Flask][Flask.com]][Flask-url]
-* [![Scikit-Learn][Scikit-Learn.org]][Scikit-Learn-url]
-* [![Pandas][Pandas.org]][Pandas-url]
-* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
+| Feature | Description |
+|---|---|
+| 🤖 **Gradient Boosting Classifier** | High-accuracy model trained on engineered EV session features |
+| 🔧 **Smart Preprocessing** | Automated feature engineering — temperature binning, duration categorisation, and more |
+| 🌐 **Flask Web App** | Lightweight backend with a responsive Bootstrap-powered frontend |
+| ⚡ **Real-time Prediction** | Instant `Success` / `Failed` output for any new charging session input |
+| 📊 **EDA Notebook** | Deep-dive analysis of global charging behaviour patterns |
+| 🗂️ **Mock Data Generator** | Script to generate synthetic datasets for testing and development |
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+---
 
-<!-- GETTING STARTED -->
-## Getting Started
+## 📂 Project Structure
 
-Follow these steps to set up the project locally on your machine.
+```text
+Global-EV-Charging/
+│
+├── templates/
+│   └── index.html                  # Frontend web interface (HTML + Bootstrap)
+│
+├── app.py                          # Flask backend — routing & prediction logic
+├── ev.py                           # Standalone preprocessing & model training script
+├── ev.ipynb                        # Jupyter Notebook — EDA, preprocessing & training
+├── generate_data.py                # Script to generate synthetic/mock EV session data
+│
+├── gradient_boosting_model.pkl     # Serialised trained Gradient Boosting model
+├── preprocessor.pkl                # Serialised preprocessing pipeline (encoders + scalers)
+│
+├── requirements.txt                # All Python dependencies
+└── README.md                       # Project documentation (this file)
+```
 
-### Prerequisites
+---
 
-Ensure you have Python 3.8+ installed. You'll need pip to install the required packages.
-* pip
-  ```sh
-  python -m pip install --upgrade pip
-  ```
+## 📊 Dataset
 
-### Installation
+The dataset (real or synthetically generated via `generate_data.py`) consists of EV charging session records with the following key features:
 
-1. Clone the repo
-   ```sh
-   git clone https://github.com/your_username/repo_name.git
+| Column | Description |
+|---|---|
+| `battery_capacity_kwh` | Total battery capacity of the EV (in kWh) |
+| `session_duration_min` | Duration of the charging session (in minutes) |
+| `energy_delivered_kwh` | Actual energy delivered during the session (in kWh) |
+| `start_time_hour` | Hour of the day the session started (0–23) |
+| `temperature_c` | Ambient temperature during charging (in °C) |
+| `charger_type` | Type of charger used (AC Level 1 / AC Level 2 / DC Fast) |
+| `location_type` | Location category (Home / Public / Workplace) |
+| `charging_status` | **Target variable** — `Success` or `Failed` |
+
+> 📌 The synthetic dataset can be regenerated at any time using `python generate_data.py`.
+
+---
+
+## 🧠 Model Details
+
+The prediction pipeline consists of two serialised components:
+
+### 1. `preprocessor.pkl` — Preprocessing Pipeline
+- **Numerical features:** StandardScaler normalisation
+- **Categorical features:** OneHotEncoder (handles unseen categories gracefully)
+- **Engineered features:**
+  - `temp_category` — bins temperature into `Cold`, `Moderate`, `Hot`
+  - `duration_bound` — categorises session duration as `Short`, `Medium`, `Long`
+  - `energy_efficiency` — ratio of energy delivered to battery capacity
+
+### 2. `gradient_boosting_model.pkl` — Classifier
+- **Algorithm:** Gradient Boosting Classifier (`sklearn.ensemble.GradientBoostingClassifier`)
+- **Tuned hyperparameters:** `n_estimators`, `learning_rate`, `max_depth`
+- **Evaluation Metrics:** Accuracy, Precision, Recall, F1-Score, ROC-AUC
+- **Output Classes:** `Success` (1) / `Failed` (0)
+
+---
+
+## ⚙️ Prerequisites & Installation
+
+### Requirements
+- Python **3.8+**
+- pip package manager
+
+### Step-by-Step Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-username/global-ev-charging.git
+   cd global-ev-charging
    ```
-2. Navigate to the project directory
-   ```sh
-   cd repo_name
+
+2. **Create a virtual environment (recommended):**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate        # On macOS/Linux
+   venv\Scripts\activate           # On Windows
    ```
-3. Install NPM packages & dependencies
-   ```sh
+
+3. **Install all dependencies:**
+   ```bash
    pip install -r requirements.txt
    ```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+   Key packages used:
+   ```
+   flask
+   pandas
+   numpy
+   scikit-learn
+   joblib
+   ```
 
-<!-- USAGE EXAMPLES -->
-## Usage
+4. **(Optional) Regenerate the dataset:**
+   ```bash
+   python generate_data.py
+   ```
 
-To start the predictive modeling tool, boot up the Flask web server:
+5. **(Optional) Retrain the model:**
+   ```bash
+   python ev.py
+   ```
 
-```bash
-python app.py
+---
+
+## 💡 How to Run
+
+1. **Start the Flask development server:**
+   ```bash
+   python app.py
+   ```
+
+2. **You should see output similar to:**
+   ```
+    * Running on http://127.0.0.1:5000
+    * Debug mode: on
+   ```
+
+3. **Open your browser and navigate to:**
+   ```
+   http://127.0.0.1:5000
+   ```
+
+4. **Fill in the prediction form** with values like:
+   - Battery Capacity (kWh)
+   - Session Duration (minutes)
+   - Energy Delivered (kWh)
+   - Start Time (hour)
+   - Temperature (°C)
+   - Charger Type & Location
+
+5. **Click `Predict Status`** — the result (`✅ Success` or `❌ Failed`) will appear instantly.
+
+---
+
+## 🔌 API Reference
+
+The Flask app exposes a simple prediction endpoint:
+
+### `POST /predict`
+
+**Request Body (JSON):**
+```json
+{
+  "battery_capacity_kwh": 60,
+  "session_duration_min": 45,
+  "energy_delivered_kwh": 30,
+  "start_time_hour": 9,
+  "temperature_c": 22,
+  "charger_type": "AC Level 2",
+  "location_type": "Public"
+}
 ```
-Open your standard web browser and head over to `http://127.0.0.1:5000/`. Fill the required telemetry context for an EV session, and the Gradient Boosting Predictor will give you instant feedback on whether the session is likely to succeed.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- PROJECT STRUCTURE -->
-## Project Structure
-
-```text
-EV-Charging-Prediction/
-├── templates/
-│   └── index.html               # Frontend User Interface
-├── app.py                       # Main Flask Application / API
-├── ev.py / ev.ipynb             # ML Model Training & EDA
-├── generate_data.py             # Synthetic Datasets builder
-├── gradient_boosting_model.pkl  # Serialized Trained Model
-├── preprocessor.pkl             # Serialized Data Pipeline
-└── requirements.txt             # Python Dependencies
+**Response:**
+```json
+{
+  "prediction": "Success",
+  "confidence": 0.87
+}
 ```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+---
 
-<!-- CONTRIBUTING -->
-## Contributing
+## 🔮 Future Improvements
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+- [ ] Add support for multi-country geolocation data to capture regional behaviour differences
+- [ ] Integrate live weather API for automatic temperature input
+- [ ] Expand model to predict **charging duration** (regression task)
+- [ ] Deploy to cloud (AWS / GCP / Render) with a public URL
+- [ ] Add time-series analysis for peak charging demand forecasting
+- [ ] Interactive dashboard using Plotly / Streamlit for EDA visualisation
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+---
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
+## 🤝 Contributing
+
+Contributions are welcome! To get started:
+
+1. Fork the repository
+2. Create a new branch: `git checkout -b feature/your-feature-name`
+3. Make your changes and commit: `git commit -m "Add: your feature description"`
+4. Push to the branch: `git push origin feature/your-feature-name`
 5. Open a Pull Request
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+Please ensure your code follows PEP 8 style guidelines and includes appropriate comments.
 
-<!-- LICENSE -->
-## License
+---
 
-Distributed under the MIT License. See `LICENSE` for more information.
+## 📄 License
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
+---
 
-<!-- MARKDOWN LINKS & IMAGES -->
-[contributors-shield]: https://img.shields.io/github/contributors/your_username/repo_name.svg?style=for-the-badge
-[contributors-url]: https://github.com/your_username/repo_name/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/your_username/repo_name.svg?style=for-the-badge
-[forks-url]: https://github.com/your_username/repo_name/network/members
-[stars-shield]: https://img.shields.io/github/stars/your_username/repo_name.svg?style=for-the-badge
-[stars-url]: https://github.com/your_username/repo_name/stargazers
-[issues-shield]: https://img.shields.io/github/issues/your_username/repo_name.svg?style=for-the-badge
-[issues-url]: https://github.com/your_username/repo_name/issues
-[license-shield]: https://img.shields.io/github/license/your_username/repo_name.svg?style=for-the-badge
-[license-url]: https://github.com/your_username/repo_name/blob/master/LICENSE
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/linkedin_username
-
-[Python.org]: https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white
-[Python-url]: https://www.python.org/
-[Flask.com]: https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white
-[Flask-url]: https://flask.palletsprojects.com/
-[Scikit-Learn.org]: https://img.shields.io/badge/scikit--learn-%23F7931E.svg?style=for-the-badge&logo=scikit-learn&logoColor=white
-[Scikit-Learn-url]: https://scikit-learn.org/
-[Pandas.org]: https://img.shields.io/badge/pandas-%23150458.svg?style=for-the-badge&logo=pandas&logoColor=white
-[Pandas-url]: https://pandas.pydata.org/
-[Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
-[Bootstrap-url]: https://getbootstrap.com
+<div align="center">
+  Made with ❤️ for a greener, smarter EV future 🌱
+</div>
